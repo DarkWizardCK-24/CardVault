@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.cardvault.app"
+    namespace = "com.cardvaultt.app"
     // flutter_local_notifications 23.x and androidx.core 1.19 require compileSdk 37.
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.cardvault.app"
+        applicationId = "com.cardvaultt.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
