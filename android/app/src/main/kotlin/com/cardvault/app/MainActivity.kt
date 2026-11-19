@@ -1,4 +1,4 @@
-package com.aaibuzz.cardvault
+package com.cardvault.app
 
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterFragmentActivity
