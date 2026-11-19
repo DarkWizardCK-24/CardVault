@@ -29,12 +29,8 @@ It is not a banking app. It never connects to a bank, never fetches data online 
 - [Security and privacy](#security-and-privacy)
 - [Screenshots](#screenshots)
 - [Getting started](#getting-started)
-- [Running on Android](#running-on-android)
-- [Running on iOS](#running-on-ios)
 - [Moving to a new device](#moving-to-a-new-device)
-- [Project structure](#project-structure)
-- [Development](#development)
-- [Known gaps](#known-gaps)
+- [Tech stack](#tech-stack)
 
 ## Features
 
@@ -80,57 +76,17 @@ Encryption protects data at rest. It cannot protect a device that is already com
 
 ## Screenshots
 
-The thumbnails link to full-size images in [`docs/screenshots`](docs/screenshots). They are rendered from the real app by `test/screenshots_test.dart` with illustrative test data. The app itself ships with no sample data.
-
 <table>
   <tr>
-    <td align="center"><a href="docs/screenshots/mobile-home.png"><img src="docs/screenshots/thumbs/mobile-home.png" width="170" alt="Home"></a><br><sub>Home</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-card-deck.png"><img src="docs/screenshots/thumbs/mobile-card-deck.png" width="170" alt="Card deck"></a><br><sub>Cards</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-calendar.png"><img src="docs/screenshots/thumbs/mobile-calendar.png" width="170" alt="Calendar"></a><br><sub>Calendar</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-calculators.png"><img src="docs/screenshots/thumbs/mobile-calculators.png" width="170" alt="Money"></a><br><sub>Money</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-more.png"><img src="docs/screenshots/thumbs/mobile-more.png" width="170" alt="More"></a><br><sub>More</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/screenshots/mobile-card-details.png"><img src="docs/screenshots/thumbs/mobile-card-details.png" width="170" alt="Card details"></a><br><sub>Card details</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-card-back.png"><img src="docs/screenshots/thumbs/mobile-card-back.png" width="170" alt="Card back"></a><br><sub>Card back</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-add-card.png"><img src="docs/screenshots/thumbs/mobile-add-card.png" width="170" alt="Add card"></a><br><sub>Add card</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-deck-expanded.png"><img src="docs/screenshots/thumbs/mobile-deck-expanded.png" width="170" alt="Expanded deck"></a><br><sub>Expanded deck</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-activity.png"><img src="docs/screenshots/thumbs/mobile-activity.png" width="170" alt="Activity"></a><br><sub>Activity</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/screenshots/mobile-benefits.png"><img src="docs/screenshots/thumbs/mobile-benefits.png" width="170" alt="Benefits"></a><br><sub>Benefits</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-documents.png"><img src="docs/screenshots/thumbs/mobile-documents.png" width="170" alt="Documents"></a><br><sub>Documents</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-spending.png"><img src="docs/screenshots/thumbs/mobile-spending.png" width="170" alt="Spending"></a><br><sub>Spending</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-insights.png"><img src="docs/screenshots/thumbs/mobile-insights.png" width="170" alt="Insights"></a><br><sub>Insights</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-payments.png"><img src="docs/screenshots/thumbs/mobile-payments.png" width="170" alt="Payments"></a><br><sub>Payments</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/screenshots/mobile-security.png"><img src="docs/screenshots/thumbs/mobile-security.png" width="170" alt="Security"></a><br><sub>Security</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-backup-restore.png"><img src="docs/screenshots/thumbs/mobile-backup-restore.png" width="170" alt="Backup and restore"></a><br><sub>Backup &amp; restore</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-collections.png"><img src="docs/screenshots/thumbs/mobile-collections.png" width="170" alt="Collections"></a><br><sub>Collections</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-emergency.png"><img src="docs/screenshots/thumbs/mobile-emergency.png" width="170" alt="Bank directory"></a><br><sub>Bank directory</sub></td>
-    <td align="center"><a href="docs/screenshots/mobile-locked.png"><img src="docs/screenshots/thumbs/mobile-locked.png" width="170" alt="Locked"></a><br><sub>Lock screen</sub></td>
-  </tr>
-</table>
-
-**Tablet and desktop**
-
-<table>
-  <tr>
-    <td align="center"><a href="docs/screenshots/tablet-home.png"><img src="docs/screenshots/thumbs/tablet-home.png" width="230" alt="Tablet home"></a><br><sub>Tablet: home</sub></td>
-    <td align="center"><a href="docs/screenshots/tablet-calendar.png"><img src="docs/screenshots/thumbs/tablet-calendar.png" width="230" alt="Tablet calendar"></a><br><sub>Tablet: calendar</sub></td>
-    <td align="center"><a href="docs/screenshots/desktop-home.png"><img src="docs/screenshots/thumbs/desktop-home.png" width="300" alt="Desktop home"></a><br><sub>Desktop: home</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/screenshots/desktop-card-vault.png"><img src="docs/screenshots/thumbs/desktop-card-vault.png" width="300" alt="Desktop cards"></a><br><sub>Desktop: cards</sub></td>
-    <td align="center"><a href="docs/screenshots/desktop-calculators.png"><img src="docs/screenshots/thumbs/desktop-calculators.png" width="300" alt="Desktop money"></a><br><sub>Desktop: money</sub></td>
-    <td align="center"><a href="docs/screenshots/desktop-insights.png"><img src="docs/screenshots/thumbs/desktop-insights.png" width="300" alt="Desktop insights"></a><br><sub>Desktop: insights</sub></td>
+    <td align="center"><img src="docs/screenshots/thumbs/mobile-home.png" width="170" alt="Home"><br><sub>Home</sub></td>
+    <td align="center"><img src="docs/screenshots/thumbs/mobile-card-deck.png" width="170" alt="Cards"><br><sub>Cards</sub></td>
+    <td align="center"><img src="docs/screenshots/thumbs/mobile-card-details.png" width="170" alt="Card details"><br><sub>Card details</sub></td>
+    <td align="center"><img src="docs/screenshots/thumbs/mobile-calendar.png" width="170" alt="Calendar"><br><sub>Calendar</sub></td>
   </tr>
 </table>
 
 <p align="center">
-  <a href="docs/thumbnails/cardvault-thumb-2-devices.png"><img src="docs/thumbnails/cardvault-thumb-2-devices.png" alt="CardVault on laptop and phone" width="440"></a>
-  <a href="docs/thumbnails/cardvault-thumb-3-gallery.png"><img src="docs/thumbnails/cardvault-thumb-3-gallery.png" alt="CardVault screen gallery" width="440"></a>
+  <img src="docs/screenshots/desktop-home.png" width="700" alt="CardVault on desktop"><br><sub>Tablet and desktop layout</sub>
 </p>
 
 ## Getting started
@@ -152,71 +108,6 @@ flutter run            # picks a connected phone or emulator
 
 On first launch, set a master password. CardVault then shows a one-time **recovery code**. Write it down, because it is the only way back in if you forget the password.
 
-## Running on Android
-
-1. Accept the SDK licences once:
-   ```bash
-   flutter doctor --android-licenses
-   ```
-2. On the phone, turn on **Developer options** and **USB debugging**, connect it by cable and accept the debugging prompt.
-3. Run:
-   ```bash
-   flutter devices                # the phone should be listed
-   flutter run                    # debug build with hot reload
-   flutter run --release          # fast build that also works without the cable
-   ```
-4. To build an installable file:
-   ```bash
-   flutter build apk --release        # build/app/outputs/flutter-apk/app-release.apk
-   flutter build appbundle --release  # for the Play Store
-   ```
-
-**Notes**
-
-- The package name is `com.cardvaultt.app`, and the project compiles against SDK 37.
-- Fingerprint unlock needs at least one fingerprint enrolled on the phone.
-- Reminders use exact alarms, and Android 13 or newer asks for notification permission the first time you turn reminders on.
-- Before publishing, sign release builds with your own keystore. `key.properties` and `*.jks` are git-ignored.
-
-## Running on iOS
-
-You can run CardVault on your own iPhone without TestFlight. A free Apple ID works.
-
-1. Install the tools on a Mac:
-   ```bash
-   brew install cocoapods
-   sudo xcodebuild -runFirstLaunch
-   flutter doctor                 # Xcode should show no errors
-   ```
-2. Install the pods and open the workspace:
-   ```bash
-   flutter pub get
-   cd ios && pod install && cd ..
-   open ios/Runner.xcworkspace    # the .xcworkspace, not the .xcodeproj
-   ```
-3. In Xcode, set up signing under **Runner → Signing & Capabilities**:
-   - Tick **Automatically manage signing** and pick your **Team**. A Personal Team is fine.
-   - If `com.cardvaultt.app` is unavailable for your team, change the bundle identifier to something unique.
-4. On the iPhone, tap **Trust This Computer**, then turn on **Settings → Privacy & Security → Developer Mode**. The phone restarts.
-5. Run:
-   ```bash
-   flutter run                    # debug: hot reload and logs, needs the Mac connected
-   flutter run --release          # opens from the home screen without the Mac
-   ```
-6. The first time the app opens, iOS asks you to trust the developer. Go to **Settings → General → VPN & Device Management**, select your Apple ID and tap **Trust**.
-
-**Notes**
-
-- The project is already set up for iOS:
-  - the Podfile targets iOS 15 for the app and every pod
-  - the Face ID and photo-library messages are set
-  - notifications show while the app is open
-  - the launch screen is dark
-  - there are no App Transport Security exceptions
-- With a free Apple ID, the install lasts **7 days**. Running it again from Xcode or `flutter run` renews it and keeps your data. A paid developer account extends this to one year and adds TestFlight and the App Store.
-- Debug builds only start while connected to the Mac. Use `--release` to use the app on its own.
-- Deleting the app deletes the vault, so export a backup first.
-
 ## Moving to a new device
 
 1. Open **More → Backup & restore** and choose **Export encrypted backup**.
@@ -225,70 +116,11 @@ You can run CardVault on your own iPhone without TestFlight. A free Apple ID wor
 
 The home screen reminds you when your last backup is more than 30 days old.
 
-## Project structure
-
-```
-lib/
-  main.dart
-  core/                no widgets in here
-    theme/             design tokens (colours, gradients), ThemeData, page transitions
-    models/            entities (CardItem, CardExtra, Benefit, Txn ...) and card styles
-    data/              RecordStore (SQLCipher, encrypted blob, memory) and the Riverpod repository
-    security/          crypto, vault service (keys, throttling, biometrics), session and auth controller
-    services/          notifications, documents, backup
-    utils/             finance maths, validators, formatters
-  ui/
-    app.dart, app_guard.dart, gate.dart   MaterialApp, auto-lock and privacy cover, setup and lock gate
-    routes/            navigation helpers
-    screens/           one folder per feature: overview, cards, calendar, tools (Money), more, benefits,
-                       documents, collections, directory, insights, money, security, setup, lock, shell
-    widgets/           reusable pieces: common (glass, buttons, nav, responsive), cards (face, deck),
-                       forms (pickers, form sheet), charts, overview, brand
-android/ ios/ windows/ web/             platform runners
-assets/brand/          logo (SVG and PNG), named logo, full-bleed icon master, horizontal wordmark
-assets/images/         in-app illustrations
-docs/                  screenshots/ (+ thumbs/) and thumbnails/ (promo images)
-tool/                  image and code generators (see below)
-test/                  unit, card-field, offline, backup, UI-polish and screenshot-journey tests
-```
-
-`core/core.dart`, `ui/widgets/widgets.dart` and `ui/screens/screens.dart` are barrel files. Regenerate them with `python tool/barrels.py` after adding or removing a file.
-
-## Development
-
-**Tech stack**
+## Tech stack
 
 - Flutter and Dart, with Riverpod for state
-- `sqflite_sqlcipher` for the encrypted database on Android and iOS
-- `cryptography` (AES-256-GCM, PBKDF2) and `flutter_secure_storage` (Keychain and Keystore) for keys
-- `local_auth` for Face ID and fingerprint unlock
-- `flutter_local_notifications` and `timezone` for reminders
-- `file_picker`, `path_provider` and `pdfx` for documents and backups
-- `fl_chart` and `flutter_animate` for charts and motion
-- Inter and Playfair Display are bundled, so no font is ever downloaded
-
-**Checks**
-
-```bash
-flutter analyze
-flutter test        # unit, security, card fields, offline, backup and UI-polish tests, plus 3 device journeys
-```
-
-**Regenerating the images**
-
-The logo, launcher icons, screenshots and promo images are produced by scripts that use Python with Playwright and Pillow, plus the Flutter test runner:
-
-```bash
-python tool/make_logo.py            # logo + launcher icons (Android adaptive + legacy, iOS, web, Windows)
-python tool/make_art.py             # in-app illustrations
-python tool/capture_screenshots.py  # docs/screenshots + thumbs
-python tool/make_thumbnails.py      # docs/thumbnails (1920x1080 promo images)
-```
-
-## Known gaps
-
-- SQLCipher, biometrics and scheduled notifications are covered by tests and have been run on desktop. A full pass on physical Android and iOS devices is still pending.
-- Windows and web do not use SQLCipher. They use an AES-256-GCM encrypted blob instead, and web storage is limited by the browser quota of about 5 MB.
-- Only plain-text documents are indexed for search. For PDFs and images, you add searchable text yourself.
-- Dragging a card in reorder mode does not auto-scroll the page at the screen edges.
-- The app has a dark theme only.
+- SQLCipher (AES-256) database on Android and iOS
+- AES-256-GCM and PBKDF2 encryption, with keys in the iOS Keychain and Android Keystore
+- Face ID and fingerprint unlock
+- Local notifications for reminders
+- Charts and motion with `fl_chart` and `flutter_animate`
