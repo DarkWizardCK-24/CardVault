@@ -59,12 +59,25 @@ class Validate {
     final s = (v ?? '').replaceAll(RegExp(r'\s|-'), '');
     if (s.isEmpty) return null; // optional – last 4 can be entered alone
     if (!RegExp(r'^\d+$').hasMatch(s)) return 'Digits only';
+    if (s.length != 16) return 'Card number must be 16 digits';
     if (!luhn(s)) return 'Number fails checksum – check for typos';
     return null;
   }
 
   static String? last4(String? v) =>
       RegExp(r'^\d{4}$').hasMatch((v ?? '').trim()) ? null : 'Enter exactly 4 digits';
+
+  static String? cvv(String? v) {
+    final s = (v ?? '').trim();
+    if (s.isEmpty) return null;
+    return RegExp(r'^\d{3,4}$').hasMatch(s) ? null : '3 or 4 digits';
+  }
+
+  static String? pin(String? v) {
+    final s = (v ?? '').trim();
+    if (s.isEmpty) return null;
+    return RegExp(r'^\d{4,6}$').hasMatch(s) ? null : '4 to 6 digits';
+  }
 
   static String? required(String? v) => (v ?? '').trim().isEmpty ? 'Required' : null;
 

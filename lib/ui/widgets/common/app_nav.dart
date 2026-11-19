@@ -10,80 +10,118 @@ class NavDest {
   const NavDest(this.icon, this.activeIcon, this.label);
 }
 
-/// The six top-level destinations.
+/// The five top-level destinations.
 const kDestinations = [
-  NavDest(Icons.dashboard_outlined, Icons.dashboard_rounded, 'Overview'),
-  NavDest(Icons.credit_card_outlined, Icons.credit_card_rounded, 'Card Vault'),
-  NavDest(Icons.calculate_outlined, Icons.calculate_rounded, 'Tools'),
-  NavDest(Icons.card_giftcard_outlined, Icons.card_giftcard_rounded, 'Benefits'),
-  NavDest(Icons.folder_open_outlined, Icons.folder_rounded, 'Documents'),
-  NavDest(Icons.shield_outlined, Icons.shield_rounded, 'Security'),
+  NavDest(Icons.space_dashboard_outlined, Icons.space_dashboard_rounded, 'Home'),
+  NavDest(Icons.credit_card_outlined, Icons.credit_card_rounded, 'Cards'),
+  NavDest(Icons.calendar_month_outlined, Icons.calendar_month_rounded, 'Calendar'),
+  NavDest(Icons.account_balance_wallet_outlined, Icons.account_balance_wallet_rounded, 'Money'),
+  NavDest(Icons.grid_view_outlined, Icons.grid_view_rounded, 'More'),
 ];
 
-/// Floating glass bottom bar used on phones and narrow windows.
+/// Floating glass bottom bar for phones: equal-width items, always-visible labels and a
+/// gradient indicator that glides to the selected tab.
 class BottomNavBar extends StatelessWidget {
   final int index;
   final ValueChanged<int> onTap;
   const BottomNavBar({super.key, required this.index, required this.onTap});
 
   @override
-  Widget build(BuildContext context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-          child: Center(
-            heightFactor: 1,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
+  Widget build(BuildContext context) {
+    final n = kDestinations.length;
+    return SafeArea(
+      minimum: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 0, 14, 4),
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withValues(alpha: .55), blurRadius: 30, offset: const Offset(0, 12)),
+                  BoxShadow(color: C.violet.withValues(alpha: .10), blurRadius: 40, spreadRadius: -6),
+                ],
+              ),
               child: Glass(
-                radius: 28,
-                padding: const EdgeInsets.all(8),
-                tint: [C.charcoal.withValues(alpha: .94), C.graphite.withValues(alpha: .94)],
-                child: Row(children: [
-                  for (var n = 0; n < kDestinations.length; n++)
-                    Expanded(
-                      flex: n == index ? 22 : 10,
-                      child: Semantics(
-                        button: true,
-                        selected: n == index,
-                        label: kDestinations[n].label,
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {
-                            HapticFeedback.selectionClick();
-                            onTap(n);
-                          },
-                          child: AnimatedContainer(
-                            duration: 380.ms,
-                            curve: Curves.easeOutBack,
-                            height: 46,
-                            margin: const EdgeInsets.symmetric(horizontal: 2),
-                            decoration: BoxDecoration(gradient: n == index ? C.goldGradient : null, borderRadius: BorderRadius.circular(20)),
-                            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              Icon(n == index ? kDestinations[n].activeIcon : kDestinations[n].icon, size: 21, color: n == index ? C.obsidian : C.muted),
-                              if (n == index)
-                                Flexible(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(kDestinations[n].label.split(' ').first,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.clip,
-                                            softWrap: false,
-                                            style: const TextStyle(color: C.obsidian, fontSize: 11.5, fontWeight: FontWeight.w800))
-                                        .animate()
-                                        .fadeIn(delay: 120.ms, duration: 220.ms),
-                                  ),
-                                ),
-                            ]),
+                radius: 30,
+                padding: const EdgeInsets.all(6),
+                tint: [const Color(0xFF1C1F2A).withValues(alpha: .92), const Color(0xFF12141B).withValues(alpha: .95)],
+                child: SizedBox(
+                  height: 60,
+                  child: Stack(children: [
+                    // sliding gradient indicator
+                    AnimatedAlign(
+                      duration: 420.ms,
+                      curve: Curves.easeOutBack,
+                      alignment: Alignment(n == 1 ? 0 : -1 + 2 * index / (n - 1), 0),
+                      child: FractionallySizedBox(
+                        widthFactor: 1 / n,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              gradient: LinearGradient(colors: [C.gold.withValues(alpha: .26), C.violet.withValues(alpha: .18)]),
+                              border: Border.all(color: C.gold.withValues(alpha: .45)),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                ]),
+                    Row(children: [
+                      for (var i = 0; i < n; i++)
+                        Expanded(
+                          child: Semantics(
+                            button: true,
+                            selected: i == index,
+                            label: kDestinations[i].label,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                onTap(i);
+                              },
+                              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                AnimatedScale(
+                                  scale: i == index ? 1.12 : 1,
+                                  duration: 300.ms,
+                                  curve: Curves.easeOutBack,
+                                  child: i == index
+                                      ? ShaderMask(
+                                          shaderCallback: (r) => C.goldGradient.createShader(r),
+                                          child: Icon(kDestinations[i].activeIcon, size: 23, color: Colors.white),
+                                        )
+                                      : Icon(kDestinations[i].icon, size: 22, color: C.muted),
+                                ),
+                                const SizedBox(height: 4),
+                                AnimatedDefaultTextStyle(
+                                  duration: 250.ms,
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 10.5,
+                                    letterSpacing: .2,
+                                    fontWeight: i == index ? FontWeight.w800 : FontWeight.w600,
+                                    color: i == index ? C.gold : C.muted,
+                                  ),
+                                  child: Text(kDestinations[i].label, maxLines: 1, overflow: TextOverflow.fade, softWrap: false),
+                                ),
+                              ]),
+                            ),
+                          ),
+                        ),
+                    ]),
+                  ]),
+                ),
               ),
             ),
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 /// Vertical navigation rail for tablets, desktop and web. Shows labels when [extended].

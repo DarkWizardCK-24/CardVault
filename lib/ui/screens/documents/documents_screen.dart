@@ -21,7 +21,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
       ..sort((a, b) => b.added.compareTo(a.added));
     return Screen(
       title: 'Documents', subtitle: 'Encrypted on this device',
-      actions: [IconPill(Icons.emergency_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DirectoryScreen())), tooltip: 'Bank directory & emergency')],
+      actions: [IconPill(Icons.upload_file_rounded, () => importDocument(context, ref), tooltip: 'Import document', active: true)],
       children: [
         Glass(child: Row(children: [
           const IconBadge(Icons.enhanced_encryption_outlined),

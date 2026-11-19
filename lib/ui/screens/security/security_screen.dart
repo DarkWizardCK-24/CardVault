@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cardvault/core/core.dart';
-import 'package:cardvault/ui/screens/screens.dart';
 import 'package:cardvault/ui/widgets/widgets.dart';
 
 class SecurityScreen extends ConsumerWidget {
@@ -13,7 +12,6 @@ class SecurityScreen extends ConsumerWidget {
     final st = d.settings;
     final n = ref.read(dataProvider.notifier);
     final svc = ref.read(vaultServiceProvider);
-    Widget item(IconData i, String t, String s, VoidCallback f) => ListRow(leading: IconBadge(i), title: t, subtitle: s, trailing: const Icon(Icons.chevron_right_rounded, color: C.muted), onTap: f);
     const timeouts = {'Immediately': 1, '30 seconds': 30, '1 minute': 60, '5 minutes': 300, '15 minutes': 900, 'Never': 0};
     final tLabel = timeouts.entries.firstWhere((e) => e.value == st.autoLockSeconds, orElse: () => const MapEntry('1 minute', 60)).key;
 
@@ -24,7 +22,7 @@ class SecurityScreen extends ConsumerWidget {
           const Icon(Icons.verified_user_rounded, color: C.good, size: 34), const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Vault protected', style: T.h2),
-            Text('AES-256 SQLCipher database · key held in the OS Keychain/Keystore · no network access', style: T.muted),
+            Text('AES-256 encrypted database · key held in the OS Keychain/Keystore · no network access', style: T.muted),
           ])),
         ]),
       ).rise(),
@@ -74,14 +72,8 @@ class SecurityScreen extends ConsumerWidget {
         }),
         const ListTile(leading: Icon(Icons.visibility_off_outlined, color: C.silver), title: Text('App-switcher preview hidden'), subtitle: Text('Content is covered when the app is backgrounded')),
         const ListTile(leading: Icon(Icons.content_paste_off_outlined, color: C.silver), title: Text('Clipboard clears after 30s'), subtitle: Text('Applies to every copied detail')),
-        const ListTile(leading: Icon(Icons.block_flipped, color: C.silver), title: Text('CVV, PIN, OTP never stored'), subtitle: Text('There is no field for them anywhere in the app')),
+        const ListTile(leading: Icon(Icons.fingerprint_rounded, color: C.silver), title: Text('Secrets need re-authentication'), subtitle: Text('Card number, CVV, PIN and secret notes are revealed only after Face ID / fingerprint or your master password')),
       ])).rise(2),
-      const SectionHeader('More'),
-      item(Icons.backup_outlined, 'Backup & restore', 'Encrypted export / import', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BackupScreen()))),
-      item(Icons.notifications_active_outlined, 'Notifications & reminders', 'Timing and frequency', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen()))),
-      item(Icons.settings_outlined, 'App settings', 'About, sample data, reset', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()))),
-      const SizedBox(height: 14),
-      GoldButton('Lock vault now', icon: Icons.lock_rounded, onTap: () => ref.read(authProvider.notifier).lock()),
       const SizedBox(height: 14),
       Text('Encryption protects data at rest. It cannot protect a device that is already compromised (malware, jailbreak/root) — keep your OS updated and your device locked.', style: T.caption),
     ]);

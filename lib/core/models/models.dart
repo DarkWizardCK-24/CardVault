@@ -1,5 +1,6 @@
-// Data models. NOTE: by design there is NO field for CVV, ATM PIN, OTP or
-// banking passwords anywhere in this app.
+// Data models. Everything here lives inside the encrypted vault (SQLCipher on
+// mobile, AES-GCM blob elsewhere). Sensitive card secrets (number, CVV, PIN and
+// secret extra fields) are masked in the UI and only revealed after re-authentication.
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
@@ -17,13 +18,28 @@ abstract class Entity {
   Map<String, dynamic> toMap();
 }
 
+/// A user-defined extra detail on a card, e.g. CRN, customer ID, UPI ID.
+class CardExtra {
+  String label, value;
+  bool secret;
+  CardExtra({this.label = '', this.value = '', this.secret = false});
+  Map<String, dynamic> toMap() => {'label': label, 'value': value, 'secret': secret};
+  factory CardExtra.fromMap(Map<String, dynamic> m) =>
+      CardExtra(label: m['label'] ?? '', value: m['value'] ?? '', secret: m['secret'] ?? false);
+}
+
+/// Suggested labels for extra card details.
+const kExtraLabels = ['CRN', 'Customer ID', 'Account number', 'IFSC', 'UPI ID', 'Net-banking user ID', 'Relationship manager', 'Card reference'];
+
 class CardItem implements Entity {
   @override
   final String id;
   String bank, holder, nickname, network, product, themeId;
   CardKind kind;
-  String number; // full PAN – encrypted at rest (SQLCipher), masked in UI
+  String number; // full PAN – encrypted at rest, masked in UI
   String last4;
+  String cvv, pin; // encrypted at rest, revealed only after re-authentication
+  List<CardExtra> extras;
   int expMonth, expYear;
   DateTime? issueDate;
   double creditLimit, outstanding, annualFee, joiningFee, rewardPoints, forexMarkup;
@@ -47,6 +63,9 @@ class CardItem implements Entity {
     this.kind = CardKind.credit,
     this.number = '',
     this.last4 = '',
+    this.cvv = '',
+    this.pin = '',
+    List<CardExtra>? extras,
     this.expMonth = 1,
     this.expYear = 2030,
     this.issueDate,
@@ -71,7 +90,15 @@ class CardItem implements Entity {
     this.customColorB,
     List<String>? collectionIds,
   })  : id = id ?? newId(),
+        extras = extras ?? [],
         collectionIds = collectionIds ?? [];
+
+  int get daysToExpiry {
+    final n = DateTime.now();
+    return expiryDate.difference(DateTime(n.year, n.month, n.day)).inDays;
+  }
+
+  bool get expiringSoon => !isExpired && daysToExpiry <= 90;
 
   double get available => (creditLimit - outstanding).clamp(0, double.infinity);
   double get utilization => creditLimit <= 0 ? 0 : (outstanding / creditLimit * 100);
@@ -84,7 +111,8 @@ class CardItem implements Entity {
   Map<String, dynamic> toMap() => {
         'id': id, 'bank': bank, 'holder': holder, 'nickname': nickname, 'network': network,
         'product': product, 'themeId': themeId, 'kind': kind.name, 'number': number,
-        'last4': last4, 'expMonth': expMonth, 'expYear': expYear,
+        'last4': last4, 'cvv': cvv, 'pin': pin, 'extras': [for (final e in extras) e.toMap()],
+        'expMonth': expMonth, 'expYear': expYear,
         'issueDate': issueDate?.toIso8601String(), 'creditLimit': creditLimit,
         'outstanding': outstanding, 'annualFee': annualFee, 'joiningFee': joiningFee,
         'rewardPoints': rewardPoints, 'forexMarkup': forexMarkup, 'billingDay': billingDay,
@@ -99,7 +127,9 @@ class CardItem implements Entity {
         id: m['id'], bank: m['bank'] ?? '', holder: m['holder'] ?? '', nickname: m['nickname'] ?? '',
         network: m['network'] ?? 'Visa', product: m['product'] ?? '', themeId: m['themeId'] ?? 'custom',
         kind: CardKind.values.byName(m['kind'] ?? 'credit'), number: m['number'] ?? '',
-        last4: m['last4'] ?? '', expMonth: m['expMonth'] ?? 1, expYear: m['expYear'] ?? 2030,
+        last4: m['last4'] ?? '', cvv: m['cvv'] ?? '', pin: m['pin'] ?? '',
+        extras: [for (final e in (m['extras'] ?? const [])) CardExtra.fromMap(Map<String, dynamic>.from(e))],
+        expMonth: m['expMonth'] ?? 1, expYear: m['expYear'] ?? 2030,
         issueDate: _d(m['issueDate']), creditLimit: _n(m['creditLimit']), outstanding: _n(m['outstanding']),
         annualFee: _n(m['annualFee']), joiningFee: _n(m['joiningFee']), rewardPoints: _n(m['rewardPoints']),
         forexMarkup: _n(m['forexMarkup']), billingDay: m['billingDay'] ?? 0, dueDay: m['dueDay'] ?? 0,

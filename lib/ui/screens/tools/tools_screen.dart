@@ -15,17 +15,47 @@ class _ToolsScreenState extends State<ToolsScreen> {
   @override
   Widget build(BuildContext context) {
     final tools = [
-      (Icons.receipt_long_outlined, 'Transactions', () => const TransactionsScreen()),
-      (Icons.insert_chart_outlined_rounded, 'Spending', () => const SpendingScreen()),
-      (Icons.payments_outlined, 'Payments', () => const PaymentPlannerScreen()),
-      (Icons.account_balance_wallet_outlined, 'Finances', () => const FinanceOverviewScreen()),
-      (Icons.autorenew_rounded, 'Subscriptions', () => const SubscriptionsScreen()),
-      (Icons.account_balance_outlined, 'Loans', () => const LoansScreen()),
-      (Icons.flag_outlined, 'Goals', () => const GoalsScreen()),
-      (Icons.calendar_month_rounded, 'Calendar', () => const CalendarScreen()),
-      (Icons.pie_chart_outline_rounded, 'Insights', () => const InsightsScreen()),
+      (Icons.receipt_long_rounded, 'Transactions', C.goldGradient, () => const TransactionsScreen()),
+      (Icons.payments_rounded, 'Payments', C.emberGradient, () => const PaymentPlannerScreen()),
+      (Icons.insert_chart_rounded, 'Spending', C.oceanGradient, () => const SpendingScreen()),
+      (Icons.pie_chart_rounded, 'Insights', C.sunsetGradient, () => const InsightsScreen()),
+      (Icons.autorenew_rounded, 'Subscriptions', C.sunsetGradient, () => const SubscriptionsScreen()),
+      (Icons.account_balance_rounded, 'Loans', C.goldGradient, () => const LoansScreen()),
+      (Icons.flag_rounded, 'Goals', C.oceanGradient, () => const GoalsScreen()),
+      (Icons.account_balance_wallet_rounded, 'Net position', C.emberGradient, () => const FinanceOverviewScreen()),
     ];
-    return Screen(title: 'Tools', subtitle: 'Calculators & money trackers', children: [
+    return Screen(title: 'Money', subtitle: 'Trackers & calculators', children: [
+      const SectionHeader('Trackers'),
+      LayoutBuilder(builder: (context, box) {
+        final cols = box.maxWidth >= 300 ? 4 : 3;
+        return GridView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: cols, mainAxisExtent: 98, mainAxisSpacing: 10, crossAxisSpacing: 10),
+          children: [
+            for (final (k, t) in tools.indexed)
+              Pressable(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => t.$4())),
+                child: Column(children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: t.$3,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [BoxShadow(color: t.$3.colors.first.withValues(alpha: .30), blurRadius: 14, offset: const Offset(0, 6))],
+                    ),
+                    child: Icon(t.$1, color: Colors.white, size: 26),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(t.$2, style: T.caption.copyWith(color: C.text, letterSpacing: .1), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+                ]),
+              ).rise(k),
+          ],
+        );
+      }),
+      const SectionHeader('Calculators'),
       ChipBar(items: names, index: i, onChanged: (v) => setState(() => i = v)),
       const SizedBox(height: 16),
       AnimatedSwitcher(
@@ -39,20 +69,6 @@ class _ToolsScreenState extends State<ToolsScreen> {
           4 => const InterestCalc(key: ValueKey(4)),
           _ => const PrepayCalc(key: ValueKey(5)),
         },
-      ),
-      const SectionHeader('Money tools'),
-      GridView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 200, mainAxisExtent: 104, mainAxisSpacing: 12, crossAxisSpacing: 12),
-        children: [
-          for (final (k, t) in tools.indexed)
-            Glass(
-              padding: const EdgeInsets.all(10), radius: 20,
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => t.$3())),
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(t.$1, color: C.gold, size: 26), const SizedBox(height: 8), Text(t.$2, style: T.caption.copyWith(color: C.text), textAlign: TextAlign.center)]),
-            ).rise(k),
-        ],
       ),
     ]);
   }

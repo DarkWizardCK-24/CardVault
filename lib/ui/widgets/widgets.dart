@@ -32,6 +32,7 @@ export 'package:cardvault/ui/widgets/forms/choice_tile.dart';
 export 'package:cardvault/ui/widgets/forms/date_tile.dart';
 export 'package:cardvault/ui/widgets/forms/form_sheet.dart';
 export 'package:cardvault/ui/widgets/forms/num_field.dart';
+export 'package:cardvault/ui/widgets/forms/pickers.dart';
 export 'package:cardvault/ui/widgets/forms/segmented_pick.dart';
 export 'package:cardvault/ui/widgets/forms/slider_field.dart';
 export 'package:cardvault/ui/widgets/money/txn_row.dart';

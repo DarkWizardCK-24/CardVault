@@ -80,6 +80,7 @@ class _FormSheetState extends ConsumerState<_FormSheet> {
   Widget build(BuildContext context) {
     final cards = ref.watch(dataProvider).cards;
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       child: Form(
         key: _key,
@@ -99,6 +100,8 @@ class _FormSheetState extends ConsumerState<_FormSheet> {
                   controller: _ctl[f.key],
                   keyboardType: f.number ? const TextInputType.numberWithOptions(decimal: true) : (f.multiline ? TextInputType.multiline : TextInputType.text),
                   maxLines: f.multiline ? 4 : 1, minLines: f.multiline ? 2 : 1,
+                  textInputAction: f.multiline ? TextInputAction.newline : TextInputAction.next,
+                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
                   textCapitalization: f.number ? TextCapitalization.none : TextCapitalization.sentences,
                   decoration: InputDecoration(labelText: f.label, hintText: f.hint, prefixText: f.number ? '' : null),
                   validator: (s) => f.number ? Validate.amount(s, required: f.required) : (f.required ? Validate.required(s) : null),
@@ -108,12 +111,8 @@ class _FormSheetState extends ConsumerState<_FormSheet> {
                   validator: (d) => f.required && d == null ? 'Required' : null,
                   builder: (st) => GestureDetector(
                     onTap: () async {
-                      final now = DateTime.now();
-                      final d = await showDatePicker(
-                        context: context, initialDate: st.value ?? now,
-                        firstDate: DateTime(now.year - 15), lastDate: DateTime(now.year + 30),
-                        builder: (c, w) => Theme(data: Theme.of(c).copyWith(colorScheme: Theme.of(c).colorScheme.copyWith(primary: C.gold, surface: C.charcoal)), child: w!),
-                      );
+                      FocusScope.of(context).unfocus();
+                      final d = await pickDate(context, initial: st.value, title: f.label);
                       if (d != null) {
                         v[f.key] = d;
                         st.didChange(d);

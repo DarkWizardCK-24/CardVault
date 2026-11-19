@@ -27,7 +27,8 @@ class _CardListSectionState extends ConsumerState<CardListSection> {
         5 => c.status == CardStatus.replaced,
         _ => c.status != CardStatus.archived,
       };
-      final text = '${c.title} ${c.bank} ${c.network} ${c.last4} ${c.holder} ${c.product}'.toLowerCase();
+      final extras = c.extras.where((e) => !e.secret).map((e) => '${e.label} ${e.value}').join(' ');
+      final text = '${c.title} ${c.bank} ${c.network} ${c.last4} ${c.holder} ${c.product} $extras'.toLowerCase();
       return ok && (q.isEmpty || text.contains(q.toLowerCase()));
     }).toList();
     switch (sort) {

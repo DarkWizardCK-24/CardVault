@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'support/demo.dart';
 
 Future<void> loadFonts() async {
   for (final f in {'Inter': 'assets/fonts/Inter.ttf', 'Playfair': 'assets/fonts/Playfair.ttf'}.entries) {
@@ -40,7 +41,7 @@ const devices = [
   Device('mobile', Size(390, 844), 3, {
     'welcome', 'home', 'card-deck', 'deck-expanded', 'card-details', 'card-back', 'add-card', 'collections', 'benefits',
     'benefit-details', 'calendar', 'spending', 'insights', 'payments', 'calculators', 'documents', 'security',
-    'backup-restore', 'emergency', 'compare', 'locked',
+    'backup-restore', 'emergency', 'compare', 'locked', 'more', 'activity',
   }),
   Device('tablet', Size(820, 1180), 2, {'home', 'card-vault', 'insights', 'calendar'}),
   Device('desktop', Size(1440, 900), 1.5, {'home', 'card-vault', 'calculators', 'benefits', 'spending', 'insights', 'backup-restore', 'security'}),
@@ -95,6 +96,8 @@ void main() {
       await snap('home');
 
       // vertical swipe moves the deck selection
+      await tester.ensureVisible(find.byType(CardDeck).first);
+      await tester.pump(const Duration(milliseconds: 400));
       final before = container.read(selectedCardProvider);
       await tester.drag(find.byType(CardDeck).first, const Offset(0, -140));
       await tester.pump(const Duration(milliseconds: 900));
@@ -107,10 +110,11 @@ void main() {
       }
 
       await tab(1, dev.name == 'mobile' ? 'card-deck' : 'card-vault');
-      await tab(2, 'calculators');
-      await tab(3, 'benefits');
-      await tab(4, 'documents');
-      await tab(5, 'security');
+      await tab(2, 'calendar');
+      await tab(3, 'calculators');
+      await tab(4, 'more');
+      container.read(tabProvider.notifier).set(0);
+      await tester.pump(const Duration(milliseconds: 200));
 
       Future<void> push(Widget w, String name, {Future<void> Function()? during}) async {
         navKey.currentState!.push(MaterialPageRoute(builder: (_) => w));
@@ -131,7 +135,10 @@ void main() {
       });
       await push(const CardFormScreen(null), 'add-card');
       await push(const CollectionsScreen(), 'collections');
-      await push(const CalendarScreen(), 'calendar');
+      await push(const BenefitsScreen(), 'benefits');
+      await push(const DocumentsScreen(), 'documents');
+      await push(const SecurityScreen(), 'security');
+      await push(const ActivityScreen(), 'activity');
       await push(const SpendingScreen(), 'spending');
       await push(const InsightsScreen(), 'insights');
       await push(const PaymentPlannerScreen(), 'payments');

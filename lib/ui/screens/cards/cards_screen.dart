@@ -19,8 +19,6 @@ class CardsScreen extends ConsumerWidget {
         IconPill(Icons.compare_arrows_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompareScreen())), tooltip: 'Compare cards'),
         const SizedBox(width: 8),
         IconPill(Icons.folder_special_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CollectionsScreen())), tooltip: 'Collections'),
-        const SizedBox(width: 8),
-        IconPill(Icons.backup_outlined, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BackupScreen())), tooltip: 'Backup & restore'),
       ],
       children: [
         TwoPane(

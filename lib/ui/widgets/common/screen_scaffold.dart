@@ -31,7 +31,7 @@ class Screen extends StatelessWidget {
         body: AmbientBackground(
           child: SafeArea(
             bottom: false,
-            child: CustomScrollView(physics: const BouncingScrollPhysics(), slivers: [
+            child: CustomScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, physics: const BouncingScrollPhysics(), slivers: [
               SliverLayoutBuilder(builder: (context, c) {
                 final side = gutterFor(c.crossAxisExtent, maxWidth);
                 return SliverPadding(

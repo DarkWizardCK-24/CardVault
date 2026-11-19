@@ -1,13 +1,13 @@
-import 'package:cardvault/core/models/models.dart';
-import 'package:cardvault/core/data/repo.dart';
+import 'package:cardvault/core/core.dart';
 
-/// Illustrative sample data (fake numbers that pass no real-account lookup).
+/// Illustrative sample data used only by the screenshot test (never shipped in the app).
 Future<void> loadDemo(DataNotifier n, VaultData d) async {
   final y = DateTime.now().year;
   final cards = [
-    CardItem(bank: 'HDFC Bank', product: 'Regalia', themeId: 'hdfc_regalia', network: 'Visa', holder: 'ARJUN MEHTA', last4: '4321', number: '4111111111111111',
+    CardItem(bank: 'HDFC Bank', product: 'Regalia', themeId: 'hdfc_regalia', network: 'Visa', holder: 'ARJUN MEHTA', last4: '1111', number: '4111111111111111',
         expMonth: 8, expYear: y + 3, creditLimit: 450000, outstanding: 82000, annualFee: 2500, joiningFee: 2500, rewardPoints: 18450, forexMarkup: 2, billingDay: 12, dueDay: 2,
-        annualFeeDate: DateTime(y + 1, 3, 15), favourite: true, travel: true, support: 'See back of card'),
+        annualFeeDate: DateTime(y + 1, 3, 15), favourite: true, travel: true, support: '1800 202 6161', cvv: '123', pin: '4321',
+        extras: [CardExtra(label: 'CRN', value: '55667788'), CardExtra(label: 'Net-banking user ID', value: 'arjun.m', secret: true)]),
     CardItem(bank: 'ICICI Bank', product: 'Amazon Pay', themeId: 'icici_amazon', network: 'Visa', holder: 'ARJUN MEHTA', last4: '8842', expMonth: 3, expYear: y + 2,
         creditLimit: 250000, outstanding: 31500, rewardPoints: 4200, billingDay: 5, dueDay: 25, daily: true, favourite: true),
     CardItem(bank: 'Axis Bank', product: 'Magnus', themeId: 'axis_magnus', network: 'Mastercard', holder: 'ARJUN MEHTA', last4: '1109', expMonth: 11, expYear: y + 4,
@@ -17,7 +17,8 @@ Future<void> loadDemo(DataNotifier n, VaultData d) async {
         creditLimit: 600000, outstanding: 24000, annualFee: 60000, rewardPoints: 22000, billingDay: 8, dueDay: 28, travel: true),
     CardItem(bank: 'State Bank of India', product: 'Debit Classic', themeId: 'sbi_debit', network: 'RuPay', kind: CardKind.debit, holder: 'ARJUN MEHTA', last4: '7712',
         expMonth: 12, expYear: y + 2, daily: true),
-    CardItem(bank: 'Kotak Mahindra Bank', product: '811 Debit', themeId: 'kotak_811', network: 'Visa', kind: CardKind.debit, holder: 'ARJUN MEHTA', last4: '5560', expMonth: 5, expYear: y + 1),
+    CardItem(bank: 'Bank of India', product: 'Swadesh (RuPay)', themeId: 'boi_swadesh', network: 'RuPay', kind: CardKind.debit, holder: 'ARJUN MEHTA', last4: '5560',
+        expMonth: DateTime(y, DateTime.now().month + 2).month, expYear: DateTime(y, DateTime.now().month + 2).year),
   ];
   for (final c in cards) {
     await n.saveCard(c, isNew: true);

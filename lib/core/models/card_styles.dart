@@ -20,7 +20,7 @@ const kVariants = ['Classic', 'Platinum', 'Signature', 'Select', 'Gold', 'World'
 
 const kBanks = [
   'HDFC Bank', 'ICICI Bank', 'State Bank of India', 'Axis Bank', 'Kotak Mahindra Bank',
-  'IDFC FIRST Bank', 'Bank of Baroda', 'Punjab National Bank', 'Canara Bank', 'Union Bank of India',
+  'IDFC FIRST Bank', 'Bank of Baroda', 'Bank of India', 'Punjab National Bank', 'Canara Bank', 'Union Bank of India',
   'IndusInd Bank', 'AU Small Finance Bank', 'Federal Bank', 'Yes Bank', 'American Express',
 ];
 
@@ -61,6 +61,11 @@ final kThemes = <CardStyle>[
   // Bank of Baroda – orange / navy
   CardStyle('bob_eterna', 'Bank of Baroda', 'Eterna', [_c(0xFFF26A21), _c(0xFFD9480F), _c(0xFF8F2C05)], texture: CardTexture.diagonal),
   CardStyle('bob_premier', 'Bank of Baroda', 'Premier', [_c(0xFF14213D), _c(0xFF2B3F6E), _c(0xFF0A1226)], texture: CardTexture.guilloche),
+  // Bank of India – navy / saffron
+  CardStyle('boi_star', 'Bank of India', 'Star Platinum', [_c(0xFF0D2C6B), _c(0xFF1E4FA8), _c(0xFF071A42)], texture: CardTexture.guilloche),
+  CardStyle('boi_swadesh', 'Bank of India', 'Swadesh (RuPay)', [_c(0xFFF57C1F), _c(0xFFD9541A), _c(0xFF0D2C6B)], texture: CardTexture.diagonal),
+  CardStyle('boi_select', 'Bank of India', 'Select', [_c(0xFF12204A), _c(0xFFB8862F), _c(0xFF0A1330)], texture: CardTexture.brushed),
+  CardStyle('boi_debit', 'Bank of India', 'Debit Classic', [_c(0xFF1F5FBF), _c(0xFF3F8EF0), _c(0xFF0F3A82)], texture: CardTexture.dots),
   // PNB – maroon / gold
   CardStyle('pnb_platinum', 'Punjab National Bank', 'Platinum', [_c(0xFF7A1E2C), _c(0xFFA8323F), _c(0xFF4A0F19)], texture: CardTexture.guilloche),
   CardStyle('pnb_rupay', 'Punjab National Bank', 'RuPay Select', [_c(0xFF8B2332), _c(0xFFC14A3B), _c(0xFF551018)], texture: CardTexture.diagonal),
@@ -91,18 +96,33 @@ final kThemes = <CardStyle>[
   CardStyle('visa_signature', 'Generic', 'Visa Signature', [_c(0xFF1A1F71), _c(0xFF2B35B5), _c(0xFF0E1244)], texture: CardTexture.guilloche),
   CardStyle('mc_world_elite', 'Generic', 'Mastercard World Elite', [_c(0xFF18181B), _c(0xFF3C3C42), _c(0xFF0B0B0D)], texture: CardTexture.carbon),
   CardStyle('rupay_select', 'Generic', 'RuPay Select', [_c(0xFF1F5E3B), _c(0xFF2F8F5B), _c(0xFF12382A)], texture: CardTexture.diagonal),
+  // Signature gradients – available for any bank
+  CardStyle('sig_aurora', 'Signature', 'Aurora', [_c(0xFF0F2027), _c(0xFF2C5364), _c(0xFF00B4DB)], texture: CardTexture.guilloche),
+  CardStyle('sig_sunset', 'Signature', 'Sunset', [_c(0xFFFF512F), _c(0xFFDD2476), _c(0xFF6A0D45)], texture: CardTexture.diagonal),
+  CardStyle('sig_ocean', 'Signature', 'Deep Ocean', [_c(0xFF00C6FF), _c(0xFF0072FF), _c(0xFF0A1E5E)], texture: CardTexture.dots),
+  CardStyle('sig_cosmic', 'Signature', 'Cosmic', [_c(0xFF3A1C71), _c(0xFF7B2FF7), _c(0xFFD76D77)], texture: CardTexture.guilloche),
+  CardStyle('sig_emerald', 'Signature', 'Emerald', [_c(0xFF11998E), _c(0xFF0B6E5F), _c(0xFF06332C)], texture: CardTexture.brushed),
+  CardStyle('sig_rosegold', 'Signature', 'Rose Gold', [_c(0xFFF4C4B5), _c(0xFFD9937E), _c(0xFF9A5B4C)], texture: CardTexture.brushed, text: Color(0xFF3A1A12), dark: false),
+  CardStyle('sig_midnight', 'Signature', 'Midnight', [_c(0xFF232526), _c(0xFF414345), _c(0xFF0B0B0D)], texture: CardTexture.carbon),
+  CardStyle('sig_neon', 'Signature', 'Neon', [_c(0xFF8E2DE2), _c(0xFF4A00E0), _c(0xFF00D2FF)], texture: CardTexture.diagonal),
+  CardStyle('sig_mango', 'Signature', 'Mango', [_c(0xFFFFB347), _c(0xFFFF7E5F), _c(0xFFB0413E)], texture: CardTexture.dots),
+  CardStyle('sig_titanium', 'Signature', 'Titanium', [_c(0xFFE0E3E8), _c(0xFF9EA4AE), _c(0xFF5E646E)], texture: CardTexture.brushed, text: Color(0xFF15171B), dark: false),
   CardStyle('custom', 'Custom', 'Custom design', [_c(0xFF2B2F3A), _c(0xFF4A5166), _c(0xFF171A22)], texture: CardTexture.guilloche),
 ];
 
 CardStyle themeById(String id) => kThemes.firstWhere((t) => t.id == id, orElse: () => kThemes.last);
 
+/// The bank's own styles first, then the signature gradients (available to every card).
 List<CardStyle> themesForBank(String bank) {
-  final l = kThemes.where((t) => t.bank == bank).toList();
-  return l.isEmpty ? kThemes.where((t) => t.bank == 'Generic').toList() : l;
+  final own = kThemes.where((t) => t.bank == bank).toList();
+  final base = own.isEmpty ? kThemes.where((t) => t.bank == 'Generic').toList() : own;
+  return [...base, ...kThemes.where((t) => t.bank == 'Signature')];
 }
 
 /// Preset custom palettes shown in the custom-theme picker.
 const kCustomPalettes = <List<int>>[
   [0xFF2B2F3A, 0xFF171A22], [0xFF0F3A82, 0xFF0A2A60], [0xFF7A1E2C, 0xFF3F0C14], [0xFF1F5E3B, 0xFF0F2E1D],
   [0xFF6D2077, 0xFF2D0B33], [0xFFE2662B, 0xFF7A1F10], [0xFFD9B766, 0xFF86621A], [0xFF0B6E99, 0xFF063A52],
+  [0xFFFF512F, 0xFFDD2476], [0xFF00C6FF, 0xFF0072FF], [0xFF8E2DE2, 0xFF4A00E0], [0xFF11998E, 0xFF38EF7D],
+  [0xFFF7971E, 0xFFFFD200], [0xFFEE0979, 0xFFFF6A00], [0xFF614385, 0xFF516395], [0xFF02AAB0, 0xFF00CDAC],
 ];

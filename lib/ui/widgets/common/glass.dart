@@ -1,17 +1,7 @@
 import 'dart:ui';
-import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:cardvault/core/core.dart';
-import 'package:cardvault/ui/routes/app_routes.dart';
-import 'package:cardvault/ui/screens/screens.dart';
-import 'package:cardvault/ui/widgets/widgets.dart';
 
 /// Frosted glass surface.
 class Glass extends StatelessWidget {
@@ -95,18 +85,22 @@ class _PressableState extends State<Pressable> {
   }
 }
 
-/// App-wide ambient background with soft gold/steel glows.
+/// App-wide ambient background: deep obsidian with soft gold, violet and teal blooms.
 class AmbientBackground extends StatelessWidget {
   final Widget child;
   const AmbientBackground({super.key, required this.child});
   @override
   Widget build(BuildContext context) => Stack(children: [
-        const Positioned.fill(child: ColoredBox(color: C.obsidian)),
-        Positioned(top: -140, right: -100, child: _glow(C.gold.withValues(alpha: .13), 380)),
-        Positioned(
-            bottom: -180,
-            left: -140,
-            child: _glow(const Color(0xFF5B6B8C).withValues(alpha: .12), 420)),
+        const Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0B0C12), C.obsidian, Color(0xFF07080B)]),
+            ),
+          ),
+        ),
+        Positioned(top: -160, right: -120, child: _glow(C.gold.withValues(alpha: .16), 420)),
+        Positioned(top: 220, left: -200, child: _glow(C.violet.withValues(alpha: .13), 420)),
+        Positioned(bottom: -200, right: -140, child: _glow(C.teal.withValues(alpha: .10), 460)),
         Positioned.fill(child: child),
       ]);
   Widget _glow(Color c, double s) => IgnorePointer(
@@ -118,4 +112,3 @@ class AmbientBackground extends StatelessWidget {
                 gradient: RadialGradient(colors: [c, Colors.transparent]))),
       );
 }
-

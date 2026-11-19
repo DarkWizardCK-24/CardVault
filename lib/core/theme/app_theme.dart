@@ -15,6 +15,25 @@ class C {
   static const good = Color(0xFF6FCF97);
   static const warn = Color(0xFFE9B949);
   static const bad = Color(0xFFEB6B6B);
+  // accents
+  static const violet = Color(0xFF9B7BFF);
+  static const teal = Color(0xFF3DD9C1);
+  static const rose = Color(0xFFFF7A9C);
+  static const sky = Color(0xFF6EB6FF);
+  static const amber = Color(0xFFFFB45C);
+
+  static const auroraGradient = LinearGradient(
+      begin: Alignment.topLeft, end: Alignment.bottomRight,
+      colors: [Color(0xFF2B1B5A), Color(0xFF173A63), Color(0xFF0E4B4B)]);
+  static const sunsetGradient = LinearGradient(
+      begin: Alignment.topLeft, end: Alignment.bottomRight,
+      colors: [Color(0xFFFF7A9C), Color(0xFFB45CFF)]);
+  static const oceanGradient = LinearGradient(
+      begin: Alignment.topLeft, end: Alignment.bottomRight,
+      colors: [Color(0xFF3DD9C1), Color(0xFF6EB6FF)]);
+  static const emberGradient = LinearGradient(
+      begin: Alignment.topLeft, end: Alignment.bottomRight,
+      colors: [Color(0xFFFFB45C), Color(0xFFFF6B6B)]);
   static const goldGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,

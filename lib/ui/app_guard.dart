@@ -1,17 +1,10 @@
 import 'dart:ui';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:cardvault/core/core.dart';
 import 'package:cardvault/ui/routes/app_routes.dart';
-import 'package:cardvault/ui/screens/screens.dart';
-import 'package:cardvault/ui/widgets/widgets.dart';
 
 /// Wraps the whole app: inactivity auto-lock, lifecycle locking, and the
 /// privacy cover that hides content in the app switcher.

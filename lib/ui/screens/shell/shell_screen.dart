@@ -10,7 +10,7 @@ import 'package:cardvault/ui/widgets/widgets.dart';
 class ShellScreen extends ConsumerWidget {
   const ShellScreen({super.key});
 
-  static const _pages = [OverviewScreen(), CardsScreen(), ToolsScreen(), BenefitsScreen(), DocumentsScreen(), SecurityScreen()];
+  static const _pages = [OverviewScreen(), CardsScreen(), CalendarScreen(), ToolsScreen(), MoreScreen()];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,8 +23,6 @@ class ShellScreen extends ConsumerWidget {
     // The empty states already offer their own call to action, so the FAB only appears once there is content.
     final fab = switch (i) {
       1 when data.cards.isNotEmpty => ('Add card', Icons.add_card_rounded, () => openCardForm(context)),
-      3 when data.benefits.isNotEmpty => ('Add benefit', Icons.add_rounded, () => addBenefit(context, ref)),
-      4 when data.docs.isNotEmpty => ('Import', Icons.upload_file_rounded, () => importDocument(context, ref)),
       _ => null,
     };
 
@@ -47,7 +45,7 @@ class ShellScreen extends ConsumerWidget {
       floatingActionButton: fab == null
           ? null
           : Padding(
-              padding: EdgeInsets.only(bottom: useRail ? 8 : 74),
+              padding: EdgeInsets.only(bottom: useRail ? 8 : 82),
               child: QuickFab(label: fab.$1, icon: fab.$2, onTap: fab.$3, compact: !useRail, key: ValueKey(fab.$1)),
             ),
       bottomNavigationBar: useRail ? null : BottomNavBar(index: i, onTap: go),

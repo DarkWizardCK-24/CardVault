@@ -50,9 +50,16 @@ void main() {
   });
 
   group('Models', () {
-    test('there is no field for CVV / PIN / OTP anywhere in a card record', () {
-      final keys = CardItem(number: '4111111111111111').toMap().keys.map((k) => k.toLowerCase()).join(' ');
-      for (final banned in ['cvv', 'cvc', 'pin', 'otp', 'password']) {
+    test('card secrets never leak into titles, subtitles or the activity text', () {
+      final c = CardItem(bank: 'HDFC Bank', number: '4111111111111111', cvv: '987', pin: '6543');
+      for (final shown in [c.title, 'Added card ${c.title}']) {
+        expect(shown.contains('987'), isFalse);
+        expect(shown.contains('6543'), isFalse);
+        expect(shown.contains('4111111111111111'), isFalse);
+      }
+      // there is still no OTP / banking password field
+      final keys = c.toMap().keys.map((k) => k.toLowerCase()).join(' ');
+      for (final banned in ['otp', 'password']) {
         expect(keys.contains(banned), isFalse, reason: banned);
       }
     });

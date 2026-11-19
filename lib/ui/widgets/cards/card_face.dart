@@ -42,13 +42,23 @@ class CardFront extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22 * u),
             child: Stack(fit: StackFit.expand, children: [
+              // soft colour blooms for depth
+              Positioned(right: -w * .25, top: -w * .3, child: _Bloom(t.colors[1].withValues(alpha: .55), w * .8)),
+              Positioned(left: -w * .3, bottom: -w * .35, child: _Bloom(t.colors.last.withValues(alpha: .6), w * .75)),
               CustomPaint(painter: _TexturePainter(t.texture, t.dark)),
               // metallic sheen
               DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, stops: const [0, .45, .55, 1], colors: [
-                    Colors.white.withValues(alpha: .20), Colors.white.withValues(alpha: 0),
-                    Colors.white.withValues(alpha: 0), Colors.black.withValues(alpha: .22)]),
+                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, stops: const [0, .38, .5, .62, 1], colors: [
+                    Colors.white.withValues(alpha: .22), Colors.white.withValues(alpha: .02), Colors.white.withValues(alpha: .09),
+                    Colors.white.withValues(alpha: 0), Colors.black.withValues(alpha: .25)]),
+                ),
+              ),
+              // fine light rim
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22 * u),
+                  border: Border.all(color: Colors.white.withValues(alpha: t.dark ? .16 : .35), width: 1),
                 ),
               ),
               // selected: refined metallic border
@@ -74,11 +84,15 @@ class CardFront extends StatelessWidget {
                       ]),
                     ),
                     if (card.status != CardStatus.active) _StatusPill(card.status, u),
-                    SizedBox(width: 8 * u),
-                    Icon(Icons.contactless_outlined, color: fg.withValues(alpha: .85), size: 26 * u),
+                    SizedBox(width: 6 * u),
+                    _KindPill(card.kind == CardKind.credit ? 'CREDIT' : 'DEBIT', fg, u),
                   ]),
                   SizedBox(height: 14 * u),
-                  _Chip(u: u, light: !t.dark),
+                  Row(children: [
+                    _Chip(u: u, light: !t.dark),
+                    SizedBox(width: 12 * u),
+                    Icon(Icons.contactless_outlined, color: fg.withValues(alpha: .85), size: 24 * u),
+                  ]),
                   const Spacer(),
                   Text('•••• •••• •••• ${card.last4.isEmpty ? '0000' : card.last4}',
                       style: TextStyle(fontFamily: 'Inter', color: fg, fontSize: 19 * u, fontWeight: FontWeight.w600, letterSpacing: 2.2 * u,
@@ -93,7 +107,12 @@ class CardFront extends StatelessWidget {
                             style: TextStyle(fontFamily: 'Inter', color: fg, fontSize: 11.5 * u, fontWeight: FontWeight.w600, letterSpacing: 1 * u)),
                         if (card.showExpiry)
                           Text('VALID THRU  ${card.expMonth.toString().padLeft(2, '0')}/${(card.expYear % 100).toString().padLeft(2, '0')}',
-                              style: TextStyle(fontFamily: 'Inter', color: sub, fontSize: 9.5 * u, letterSpacing: .8 * u)),
+                              style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: card.isExpired ? const Color(0xFFFF8A8A) : (card.expiringSoon ? const Color(0xFFFFD27A) : sub),
+                                  fontSize: 9.5 * u,
+                                  fontWeight: card.expiringSoon || card.isExpired ? FontWeight.w800 : FontWeight.w500,
+                                  letterSpacing: .8 * u)),
                       ]),
                     ),
                     NetworkMark(card.network, u: u, color: fg),
@@ -106,6 +125,29 @@ class CardFront extends StatelessWidget {
       );
     });
   }
+}
+
+class _Bloom extends StatelessWidget {
+  final Color c;
+  final double s;
+  const _Bloom(this.c, this.s);
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+        child: Container(width: s, height: s, decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [c, c.withValues(alpha: 0)]))),
+      );
+}
+
+class _KindPill extends StatelessWidget {
+  final String text;
+  final Color fg;
+  final double u;
+  const _KindPill(this.text, this.fg, this.u);
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: EdgeInsets.symmetric(horizontal: 7 * u, vertical: 3 * u),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), border: Border.all(color: fg.withValues(alpha: .45), width: .8), color: fg.withValues(alpha: .08)),
+        child: Text(text, style: TextStyle(fontFamily: 'Inter', color: fg.withValues(alpha: .9), fontSize: 8 * u, fontWeight: FontWeight.w800, letterSpacing: 1.1 * u)),
+      );
 }
 
 class _StatusPill extends StatelessWidget {
@@ -195,8 +237,8 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) => Container(width: s, height: s, decoration: BoxDecoration(color: c, shape: BoxShape.circle));
 }
 
-/// Back of the card: magnetic stripe, signature panel and *support info only*.
-/// There is intentionally no CVV area.
+/// Back of the card: magnetic stripe, signature panel with a masked CVV box and support info.
+/// The CVV is never drawn in clear text on the card art; it is revealed on the details screen.
 class CardBack extends StatelessWidget {
   final CardItem card;
   const CardBack({super.key, required this.card});
@@ -222,17 +264,31 @@ class CardBack extends StatelessWidget {
                 Container(height: 42 * u, color: Colors.black.withValues(alpha: .85)),
                 Padding(
                   padding: EdgeInsets.fromLTRB(22 * u, 16 * u, 22 * u, 0),
-                  child: Container(
-                    height: 30 * u, alignment: Alignment.centerLeft, padding: EdgeInsets.symmetric(horizontal: 10 * u),
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: .88), borderRadius: BorderRadius.circular(4)),
-                    child: Text('Authorised signature', style: TextStyle(color: Colors.black54, fontSize: 10 * u, fontStyle: FontStyle.italic)),
-                  ),
+                  child: Row(children: [
+                    Expanded(
+                      child: Container(
+                        height: 30 * u, alignment: Alignment.centerLeft, padding: EdgeInsets.symmetric(horizontal: 10 * u),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          gradient: const LinearGradient(colors: [Color(0xFFF4F1E8), Color(0xFFE2DDCF)]),
+                        ),
+                        child: Text('Authorised signature', style: TextStyle(color: Colors.black54, fontSize: 10 * u, fontStyle: FontStyle.italic)),
+                      ),
+                    ),
+                    SizedBox(width: 8 * u),
+                    Container(
+                      height: 30 * u, width: 58 * u, alignment: Alignment.center,
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4)),
+                      child: Text(card.cvv.isEmpty ? 'CVV' : '•' * card.cvv.length,
+                          style: TextStyle(color: Colors.black87, fontSize: 12 * u, fontWeight: FontWeight.w800, letterSpacing: 2 * u, fontStyle: FontStyle.italic)),
+                    ),
+                  ]),
                 ),
                 const Spacer(),
                 Padding(
                   padding: EdgeInsets.fromLTRB(22 * u, 0, 22 * u, 18 * u),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(card.support.isEmpty ? 'Customer support: add in card details' : 'Support: ${card.support}',
+                    Text(card.support.isEmpty ? card.bank : 'Customer care: ${card.support}',
                         maxLines: 2, overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: t.text.withValues(alpha: .85), fontSize: 10.5 * u, fontWeight: FontWeight.w500)),
                     SizedBox(height: 4 * u),

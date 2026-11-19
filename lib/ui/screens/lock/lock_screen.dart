@@ -81,7 +81,7 @@ class _LockState extends ConsumerState<LockScreen> {
       body: AmbientBackground(
         child: SafeArea(
           child: Center(
-            child: SingleChildScrollView(
+            child: SingleChildScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
               padding: const EdgeInsets.all(28),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 420),

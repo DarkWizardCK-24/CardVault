@@ -32,6 +32,8 @@ export 'package:cardvault/ui/screens/money/subscriptions_screen.dart';
 export 'package:cardvault/ui/screens/money/transaction_actions.dart';
 export 'package:cardvault/ui/screens/money/transaction_detail_screen.dart';
 export 'package:cardvault/ui/screens/money/transactions_screen.dart';
+export 'package:cardvault/ui/screens/more/more_screen.dart';
+export 'package:cardvault/ui/screens/overview/activity_screen.dart';
 export 'package:cardvault/ui/screens/overview/overview_screen.dart';
 export 'package:cardvault/ui/screens/security/backup_screen.dart';
 export 'package:cardvault/ui/screens/security/reminders_screen.dart';

@@ -11,10 +11,14 @@ class StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Glass(
         padding: const EdgeInsets.all(14), radius: 20,
+        tint: [(color ?? C.gold).withValues(alpha: .12), Colors.white.withValues(alpha: .02)],
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Container(
             padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(color: (color ?? C.gold).withValues(alpha: .14), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [(color ?? C.gold).withValues(alpha: .35), (color ?? C.gold).withValues(alpha: .12)]),
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(icon, size: 16, color: color ?? C.gold),
           ),
           Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [

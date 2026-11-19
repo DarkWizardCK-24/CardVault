@@ -27,7 +27,7 @@ class _BenefitsScreenState extends ConsumerState<BenefitsScreen> {
     final expiring = d.benefits.where((b) => !b.expired && b.validUntil != null && b.validUntil!.isBefore(soon)).length;
     return Screen(
       title: 'Benefits', subtitle: 'Recorded by you · no online lookups',
-      actions: [IconPill(Icons.calendar_month_rounded, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalendarScreen())), tooltip: 'Calendar')],
+      actions: [IconPill(Icons.add_rounded, () => addBenefit(context, ref), tooltip: 'Add benefit', active: true)],
       children: [
         Row(children: [
           Expanded(child: StatTile('Benefits', '${d.benefits.length}', Icons.card_giftcard_rounded)), const SizedBox(width: 12),

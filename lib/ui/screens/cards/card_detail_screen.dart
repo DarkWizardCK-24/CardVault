@@ -15,6 +15,35 @@ class CardDetailScreen extends ConsumerStatefulWidget {
 
 class _DetailState extends ConsumerState<CardDetailScreen> {
   bool revealed = false;
+  Timer? _hide;
+
+  @override
+  void dispose() {
+    _hide?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _toggleReveal() async {
+    if (revealed) {
+      _hide?.cancel();
+      return setState(() => revealed = false);
+    }
+    if (await stepUpAuth(context, ref)) {
+      if (!mounted) return;
+      setState(() => revealed = true);
+      _hide?.cancel();
+      _hide = Timer(const Duration(seconds: 20), () {
+        if (mounted) setState(() => revealed = false);
+      });
+    }
+  }
+
+  Future<void> _copy(String v, String label) async {
+    if (v.isEmpty) return;
+    if (revealed || await stepUpAuth(context, ref)) {
+      if (mounted) copySensitive(context, v, label: label);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +55,6 @@ class _DetailState extends ConsumerState<CardDetailScreen> {
     final txns = d.txns.where((t) => t.cardId == c.id).take(6).toList();
     final pays = d.payments.where((p) => p.cardId == c.id).take(4).toList();
     final n = ref.read(dataProvider.notifier);
-    final fullNumber = c.number.isEmpty ? '•••• •••• •••• ${c.last4}' : (revealed ? groupNumber(c.number) : maskNumber(c.number, c.last4));
 
     Widget kv(String k, String v, {VoidCallback? copy}) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 7),
@@ -51,37 +79,45 @@ class _DetailState extends ConsumerState<CardDetailScreen> {
         Center(child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 400), child: FlipCard(card: c, selected: true))).rise(),
         const SizedBox(height: 8),
         Center(child: Text('Tap the card to flip', style: T.caption)),
-        const SectionHeader('Card number'),
+        const SizedBox(height: 14),
+        Center(child: _ExpiryChip(c)).rise(1),
+        const SectionHeader('Secure details'),
         Glass(
+          tint: [C.violet.withValues(alpha: .10), C.teal.withValues(alpha: .04)],
           child: Column(children: [
-            Row(children: [
-              Expanded(child: AnimatedSwitcher(duration: const Duration(milliseconds: 300), child: Text(fullNumber, key: ValueKey(revealed), style: T.num(20).copyWith(letterSpacing: 1.5)))),
-              if (c.number.isNotEmpty) ...[
-                IconPill(revealed ? Icons.visibility_off_outlined : Icons.visibility_outlined, () async {
-                  if (revealed) return setState(() => revealed = false);
-                  if (await stepUpAuth(context, ref)) {
-                    setState(() => revealed = true);
-                    Future.delayed(const Duration(seconds: 20), () {
-                      if (mounted) setState(() => revealed = false);
-                    });
-                  }
-                }, tooltip: 'Reveal (requires authentication)'),
-                const SizedBox(width: 8),
-                IconPill(Icons.copy_rounded, () async {
-                  if (revealed || await stepUpAuth(context, ref)) {
-                    if (context.mounted) copySensitive(context, c.number, label: 'Card number copied');
-                  }
-                }),
-              ],
-            ]),
+            _SecretRow(
+              label: 'Card number',
+              value: c.number.isEmpty ? '' : groupNumber(c.number),
+              masked: c.number.isEmpty ? '•••• •••• •••• ${c.last4}' : maskNumber(c.number, c.last4),
+              revealed: revealed,
+              big: true,
+              onCopy: () => _copy(c.number, 'Card number copied'),
+            ),
+            _SecretRow(label: 'CVV', value: c.cvv, masked: c.cvv.isEmpty ? '' : '•' * c.cvv.length, revealed: revealed, onCopy: () => _copy(c.cvv, 'CVV copied')),
+            _SecretRow(label: 'Card PIN', value: c.pin, masked: c.pin.isEmpty ? '' : '•' * c.pin.length, revealed: revealed, onCopy: () => _copy(c.pin, 'PIN copied')),
+            const SizedBox(height: 12),
+            GoldButton(revealed ? 'Hide details' : 'Reveal details', icon: revealed ? Icons.visibility_off_outlined : Icons.fingerprint_rounded, outline: revealed, onTap: _toggleReveal),
             const SizedBox(height: 10),
             Row(children: [
-              const Icon(Icons.shield_outlined, size: 14, color: C.muted),
+              const Icon(Icons.shield_outlined, size: 14, color: C.teal),
               const SizedBox(width: 6),
-              Expanded(child: Text('Encrypted at rest · re-hides after 20s · CVV and PIN are never stored', style: T.caption)),
+              Expanded(child: Text('Encrypted on this device · re-hides after 20s · clipboard clears after 30s', style: T.caption)),
             ]),
           ]),
-        ).rise(1),
+        ).rise(2),
+        if (c.extras.isNotEmpty) ...[
+          const SectionHeader('Extra details'),
+          Glass(child: Column(children: [
+            for (final x in c.extras)
+              _SecretRow(
+                label: x.label,
+                value: x.value,
+                masked: x.secret ? '•' * x.value.length.clamp(4, 12) : x.value,
+                revealed: revealed || !x.secret,
+                onCopy: () => x.secret ? _copy(x.value, '${x.label} copied') : copySensitive(context, x.value, label: '${x.label} copied'),
+              ),
+          ])).rise(3),
+        ],
         const SectionHeader('Card information'),
         Glass(child: Column(children: [
           kv('Bank', c.bank), kv('Cardholder', c.holder), kv('Network', c.network), kv('Type', c.kind == CardKind.credit ? 'Credit' : 'Debit'),
@@ -115,7 +151,7 @@ class _DetailState extends ConsumerState<CardDetailScreen> {
         if (c.support.isNotEmpty || c.notes.isNotEmpty) ...[
           const SectionHeader('Notes'),
           Glass(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            if (c.support.isNotEmpty) Text('Support (your note): ${c.support}', style: T.body),
+            if (c.support.isNotEmpty) Text('Customer care: ${c.support}', style: T.body),
             if (c.notes.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 8), child: Text(c.notes, style: T.muted)),
           ])),
         ],
@@ -140,3 +176,55 @@ class _DetailState extends ConsumerState<CardDetailScreen> {
   }
 }
 
+
+class _SecretRow extends StatelessWidget {
+  final String label, value, masked;
+  final bool revealed, big;
+  final VoidCallback onCopy;
+  const _SecretRow({required this.label, required this.value, required this.masked, required this.revealed, required this.onCopy, this.big = false});
+  @override
+  Widget build(BuildContext context) {
+    final empty = value.isEmpty && masked.isEmpty;
+    final shown = empty ? 'Not added' : (revealed ? value : masked);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(children: [
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(label.toUpperCase(), style: T.caption),
+            const SizedBox(height: 3),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (w, a) => FadeTransition(opacity: a, child: w),
+              child: Text(shown, key: ValueKey('$label$revealed'), style: empty ? T.muted : T.num(big ? 20 : 17).copyWith(letterSpacing: 1.6)),
+            ),
+          ]),
+        ),
+        if (!empty) IconButton(tooltip: 'Copy', icon: const Icon(Icons.copy_rounded, size: 18, color: C.silver), onPressed: onCopy),
+      ]),
+    );
+  }
+}
+
+class _ExpiryChip extends StatelessWidget {
+  final CardItem c;
+  const _ExpiryChip(this.c);
+  @override
+  Widget build(BuildContext context) {
+    final days = c.daysToExpiry;
+    final (txt, col) = c.isExpired
+        ? ('Expired ${dMonth(c.expiryDate)}', C.bad)
+        : days <= 90
+            ? ('Expires in $days days · ${dMonth(c.expiryDate)}', C.warn)
+            : ('Valid till ${dMonth(c.expiryDate)} · ${(days / 30).floor()} months left', C.good);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: col.withValues(alpha: .12), border: Border.all(color: col.withValues(alpha: .45))),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(c.isExpired ? Icons.error_outline_rounded : Icons.event_available_rounded, size: 16, color: col),
+        const SizedBox(width: 8),
+        Text(txt, style: T.caption.copyWith(color: col, letterSpacing: .2, fontSize: 12.5)),
+      ]),
+    );
+  }
+}

@@ -108,7 +108,7 @@ class _SetupState extends ConsumerState<SetupScreen> {
     );
   }
 
-  Widget _welcome() => Center(child: SingleChildScrollView(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+  Widget _welcome() => Center(child: SingleChildScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: 12),
         Center(child: Image.asset('assets/images/hero_cards.png', height: 200, fit: BoxFit.contain)).rise(0),
         const SizedBox(height: 14),
@@ -129,7 +129,7 @@ class _SetupState extends ConsumerState<SetupScreen> {
         const SizedBox(height: 12),
       ])));
 
-  Widget _password() => SingleChildScrollView(
+  Widget _password() => SingleChildScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 40),
           if (restore != null) ...[
@@ -166,7 +166,7 @@ class _SetupState extends ConsumerState<SetupScreen> {
         ]),
       );
 
-  Widget _recovery() => SingleChildScrollView(
+  Widget _recovery() => SingleChildScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SizedBox(height: 40),
           const Icon(Icons.key_rounded, color: C.gold, size: 34).rise(0),

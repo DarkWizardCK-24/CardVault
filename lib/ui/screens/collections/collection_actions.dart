@@ -42,7 +42,7 @@ Future<void> collectionForm(BuildContext context, WidgetRef ref, [Collection? ed
   final col = edit ?? Collection();
   final name = TextEditingController(text: col.name);
   final desc = TextEditingController(text: col.description);
-  await sheet(context, StatefulBuilder(builder: (ctx, set) => SingleChildScrollView(
+  await sheet(context, StatefulBuilder(builder: (ctx, set) => SingleChildScrollView(keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag, 
     padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(edit == null ? 'New collection' : 'Edit collection', style: T.h1), const SizedBox(height: 14),
